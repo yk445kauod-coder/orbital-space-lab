@@ -22,10 +22,11 @@ import {
   Zap,
   Lightbulb,
   Rocket,
+  CircleDot,
 } from "lucide-react";
 
-import flameImage from "@/assets/flame-microgravity.jpg";
-import earthImage from "@/assets/earth-orbit.jpg";
+import flameAsset from "@/assets/nasa-flame-flex.jpg.asset.json";
+import earthAsset from "@/assets/earth-blue-marble.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -51,12 +52,15 @@ export const Route = createFileRoute("/")({
 
 /* ---------------------------------- data --------------------------------- */
 
-const NAV = [
+const NAV_OPERATIONS = [
   { id: "mission", label: "Mission Control", icon: Home },
   { id: "flame", label: "Flame Lab", icon: Flame },
+  { id: "reports", label: "Research Reports", icon: FileText },
+];
+
+const NAV_SCIENCE = [
   { id: "data", label: "Data Explorer", icon: BarChart3 },
   { id: "intel", label: "IGNIS Intelligence", icon: Sparkles },
-  { id: "reports", label: "Research Reports", icon: FileText },
 ];
 
 const QUICK_ACCESS = [
@@ -71,28 +75,20 @@ const SPARKLINE = [12, 18, 14, 22, 19, 28, 24, 33, 30, 38, 42, 48];
 /* --------------------------------- helpers -------------------------------- */
 
 function Sparkline({ points, className }: { points: number[]; className?: string }) {
+  const max = Math.max(...points);
+  const min = Math.min(...points);
+  const range = max - min || 1;
   const path = useMemo(() => {
-    const max = Math.max(...points);
-    const min = Math.min(...points);
-    const range = max - min || 1;
-    const w = 100;
-    const h = 32;
     return points
       .map((p, i) => {
-        const x = (i / (points.length - 1)) * w;
-        const y = h - ((p - min) / range) * (h - 4) - 2;
+        const x = (i / (points.length - 1)) * 100;
+        const y = 32 - ((p - min) / range) * 28 - 2;
         return `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
       })
       .join(" ");
-  }, [points]);
+  }, [points, min, range]);
 
-  const cy = useMemo(() => {
-    const max = Math.max(...points);
-    const min = Math.min(...points);
-    const last = points[points.length - 1] ?? min;
-    return String(32 - ((last - min) / (max - min || 1)) * 28 - 2);
-  }, [points]);
-
+  const lastY = 32 - ((points[points.length - 1] ?? min) - min) / range * 28 - 2;
 
   return (
     <svg viewBox="0 0 100 32" className={className} preserveAspectRatio="none" aria-hidden>
@@ -104,7 +100,7 @@ function Sparkline({ points, className }: { points: number[]; className?: string
       </defs>
       <path d={`${path} L100,32 L0,32 Z`} fill="url(#sparkFill)" stroke="none" />
       <path d={path} fill="none" stroke="var(--ember)" strokeWidth="1.6" strokeLinejoin="round" />
-      <circle cx="100" cy={cy} r="1.8" fill="var(--ember)" />
+      <circle cx="100" cy={lastY} r="1.8" fill="var(--ember)" />
     </svg>
   );
 }
@@ -156,7 +152,7 @@ function Index() {
     { role: "user", text: "What happens to flame shape in microgravity?" },
     {
       role: "ai",
-      text: "In microgravity, flames tend to form spherical shapes due to the absence of buoyancy, allowing more complete combustion.",
+      text: "In microgravity, flames form spherical shapes due to the absence of buoyancy, allowing more complete combustion.",
     },
   ]);
   const [draft, setDraft] = useState("");
@@ -179,48 +175,64 @@ function Index() {
     );
   };
 
+  const navGroup = (title: string, items: typeof NAV_OPERATIONS) => (
+    <div>
+      <p className="px-4 pb-2 pt-4 font-mono text-[10px] font-medium uppercase tracking-[0.3em] text-muted-foreground/70">
+        {title}
+      </p>
+      <div className="space-y-1 px-3">
+        {items.map(({ id, label, icon: Icon }) => {
+          const isActive = active === id;
+          return (
+            <button
+              key={id}
+              onClick={() => setActive(id)}
+              className={`flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left text-sm font-medium transition-colors ${
+                isActive
+                  ? "bg-primary/15 text-primary shadow-[inset_2px_0_0_0_var(--ember)]"
+                  : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
+              }`}
+            >
+              <Icon className={`size-4 ${isActive ? "text-ember" : ""}`} />
+              {label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-background font-sans text-foreground">
-      {/* space backdrop */}
+      {/* space backdrop — NASA Blue Marble */}
       <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <img src={earthImage} alt="" width={1920} height={1088} className="h-full w-full object-cover opacity-45" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/70" />
+        <img
+          src={earthAsset.url}
+          alt=""
+          className="absolute -bottom-32 right-[-12%] h-[75vh] w-auto -rotate-12 object-contain opacity-[0.18]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/80" />
       </div>
 
       <div className="relative flex min-h-screen">
         {/* sidebar */}
         <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-background/70 backdrop-blur-xl lg:flex">
           <div className="flex items-center gap-3 px-5 py-6">
-            <span className="grid size-11 place-items-center rounded-xl bg-primary/15 text-2xl text-ember ember-glow">
+            <span className="grid size-11 place-items-center rounded-xl bg-primary/15 text-ember ember-glow">
               <Flame className="size-6" />
             </span>
             <div>
-              <p className="font-display text-2xl font-bold tracking-widest">IGNIS</p>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Microgravity Combustion Lab
+              <p className="font-display text-2xl font-bold tracking-[0.2em]">IGNIS</p>
+              <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground">
+                Microgravity Combustion
               </p>
             </div>
           </div>
 
-          <nav className="flex-1 space-y-1 px-3">
-            {NAV.map(({ id, label, icon: Icon }) => {
-              const isActive = active === id;
-              return (
-                <button
-                  key={id}
-                  onClick={() => setActive(id)}
-                  className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-primary/15 text-primary shadow-[inset_2px_0_0_0_var(--ember)]"
-                      : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
-                  }`}
-                >
-                  <Icon className={`size-4 ${isActive ? "text-ember" : ""}`} />
-                  {label}
-                </button>
-              );
-            })}
+          <nav className="flex-1 overflow-y-auto">
+            {navGroup("Operations", NAV_OPERATIONS)}
+            {navGroup("Science", NAV_SCIENCE)}
           </nav>
 
           <div className="m-3 rounded-xl border border-border bg-card/60 p-4">
@@ -269,19 +281,17 @@ function Index() {
                 label="Environment"
                 value="0.00 g"
                 badge="Microgravity"
-                badgeTone="success"
               />
               <StatusCard
                 icon={<Database className="size-6 text-telemetry" />}
                 label="Data Source"
                 value="NASA"
                 badge="Official Data"
-                badgeTone="success"
               />
               <button className="mission-panel group flex items-center gap-4 p-5 text-left transition-colors hover:border-primary/40">
                 <FlaskConical className="size-8 shrink-0 text-ember" />
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
                     Active Experiment
                   </p>
                   <p className="truncate font-display text-lg font-semibold">Flame Behavior Study</p>
@@ -295,8 +305,8 @@ function Index() {
               {/* combustion viz */}
               <div className="mission-panel flex flex-col overflow-hidden">
                 <div className="flex items-center gap-3 border-b border-border px-5 py-3.5">
-                  <Activity className="size-5 text-ember" />
-                  <h2 className="font-display text-sm font-bold uppercase tracking-[0.15em]">
+                  <Activity className="size-4 text-ember" />
+                  <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.3em]">
                     Combustion Visualization
                   </h2>
                   <span className="ml-auto flex items-center gap-2 rounded-full border border-success/30 bg-success/10 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest text-success">
@@ -304,19 +314,20 @@ function Index() {
                   </span>
                 </div>
 
-                <div className="grid flex-1 gap-4 p-4 md:grid-cols-[1fr_220px]">
-                  <div className="relative overflow-hidden rounded-lg border border-border bg-black">
+                <div className="grid flex-1 gap-4 p-4 md:grid-cols-[1fr_230px]">
+                  <div className="relative min-h-[280px] overflow-hidden rounded-lg border border-border bg-black md:min-h-[360px]">
                     <img
-                      src={flameImage}
-                      alt="Spherical flame burning in microgravity"
-                      className="flame-flicker h-full w-full object-cover"
+                      src={flameAsset.url}
+                      alt="Spherical flame burning in microgravity — NASA FLEX experiment"
+                      className="absolute inset-0 h-full w-full object-cover"
                       loading="lazy"
-                      width={1280}
-                      height={960}
                     />
                     <div className="absolute inset-0 scanlines" />
                     <span className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-destructive backdrop-blur">
                       <span className="size-1.5 rounded-full bg-destructive live-dot" /> Rec
+                    </span>
+                    <span className="absolute bottom-12 right-3 rounded bg-black/55 px-2 py-1 font-mono text-[9px] uppercase tracking-widest text-white/70 backdrop-blur">
+                      NASA · Fire in Space
                     </span>
                     <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-black/80 to-transparent px-4 py-3">
                       <span className="grid size-8 place-items-center rounded-full bg-primary text-primary-foreground">
@@ -335,6 +346,9 @@ function Index() {
                     <Telemetry icon={<Thermometer className="size-4 text-telemetry" />} label="Temperature" value="1673 K" delta="+5%" tone="up" />
                     <Telemetry icon={<Gauge className="size-4 text-muted-foreground" />} label="Pressure" value="101.3 kPa" delta="—" tone="flat" />
                     <div className="p-4">
+                      <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground">
+                        Heat Flux Trend
+                      </p>
                       <Sparkline points={SPARKLINE} className="h-10 w-full" />
                     </div>
                   </div>
@@ -344,14 +358,16 @@ function Index() {
               {/* assistant */}
               <div className="mission-panel flex flex-col overflow-hidden">
                 <div className="flex items-center gap-3 border-b border-border px-5 py-3.5">
-                  <Flame className="size-5 text-ember" />
-                  <h2 className="font-display text-sm font-bold uppercase tracking-[0.15em]">IGNIS Assistant</h2>
+                  <Flame className="size-4 text-ember" />
+                  <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.3em]">
+                    IGNIS Assistant
+                  </h2>
                   <span className="ml-auto rounded-full border border-border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                     AI
                   </span>
                 </div>
 
-                <div className="flex max-h-[420px] flex-1 flex-col gap-3 overflow-y-auto p-4">
+                <div className="flex max-h-[380px] min-h-[300px] flex-1 flex-col gap-3 overflow-y-auto p-4">
                   {chat.map((m, i) =>
                     m.role === "user" ? (
                       <div key={i} className="ml-8 rounded-xl rounded-tr-sm bg-primary/90 px-4 py-2.5 text-sm text-primary-foreground">
@@ -388,7 +404,7 @@ function Index() {
             <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {/* quick access */}
               <div className="mission-panel p-5">
-                <PanelHeader icon={<Zap className="size-4 text-ember" />} title="Quick Access" />
+                <PanelHeader icon={<Zap className="size-3.5 text-ember" />} title="Quick Access" />
                 <div className="mt-4 grid grid-cols-4 gap-2">
                   {QUICK_ACCESS.map(({ label, icon: Icon }) => (
                     <button
@@ -406,20 +422,18 @@ function Index() {
 
               {/* key insight */}
               <div className="mission-panel p-5">
-                <PanelHeader icon={<Lightbulb className="size-4 text-ember" />} title="Key Insights" />
+                <PanelHeader icon={<Lightbulb className="size-3.5 text-ember" />} title="Key Insights" />
                 <div className="mt-4 flex gap-4">
                   <img
-                    src={flameImage}
-                    alt=""
+                    src={flameAsset.url}
+                    alt="Real NASA microgravity flame"
                     loading="lazy"
-                    width={1280}
-                    height={960}
                     className="size-20 shrink-0 rounded-lg border border-border object-cover"
                   />
                   <div className="min-w-0">
                     <h3 className="font-display text-base font-semibold leading-snug">Spherical Flame in Microgravity</h3>
                     <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                      Microgravity leads to a more uniform and spherical flame shape with steadier burning.
+                      Without buoyancy, the flame forms a uniform blue sphere and burns steadier than on Earth.
                     </p>
                     <button className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-ember transition-colors hover:text-primary">
                       Read More <ArrowRight className="size-3.5" />
@@ -430,18 +444,18 @@ function Index() {
 
               {/* mission stats */}
               <div className="mission-panel p-5 md:col-span-2 xl:col-span-1">
-                <PanelHeader icon={<BarChart3 className="size-4 text-ember" />} title="Mission Stats" />
-                <div className="mt-2 flex items-center gap-5">
+                <PanelHeader icon={<BarChart3 className="size-3.5 text-ember" />} title="Mission Stats" />
+                <div className="mt-2 flex items-center gap-6">
                   <div className="relative grid place-items-center">
                     <Donut percent={87} />
                     <span className="absolute font-display text-xl font-bold tabular-nums">87%</span>
                   </div>
-                  <div className="space-y-2 text-xs">
+                  <div className="space-y-2.5 text-xs">
                     <p className="flex items-center gap-2">
-                      <span className="size-2 rounded-full bg-ember" /> Completed Tasks
+                      <CircleDot className="size-3.5 text-ember" /> Completed Tasks
                     </p>
-                    <p className="flex items-center gap-2">
-                      <span className="size-2 rounded-full bg-secondary" /> Remaining
+                    <p className="flex items-center gap-2 text-muted-foreground">
+                      <CircleDot className="size-3.5 opacity-40" /> Remaining
                     </p>
                     <p className="pt-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
                       ETA: ~12 min
@@ -463,7 +477,7 @@ function PanelHeader({ icon, title }: { icon: React.ReactNode; title: string }) 
   return (
     <div className="flex items-center gap-2.5">
       {icon}
-      <h2 className="font-display text-sm font-bold uppercase tracking-[0.15em]">{title}</h2>
+      <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.3em]">{title}</h2>
     </div>
   );
 }
@@ -473,28 +487,22 @@ function StatusCard({
   label,
   value,
   badge,
-  badgeTone,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   badge?: string;
-  badgeTone?: "success";
 }) {
   return (
     <div className="mission-panel flex items-center gap-4 p-5">
       <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-telemetry/10">{icon}</span>
       <div className="min-w-0">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">{label}</p>
+        <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{label}</p>
         <p className="font-display text-2xl font-bold tabular-nums leading-tight">{value}</p>
         {badge && (
-          <p
-            className={`mt-0.5 flex items-center gap-1.5 text-xs font-medium ${
-              badgeTone === "success" ? "text-success" : "text-muted-foreground"
-            }`}
-          >
+          <p className="mt-0.5 flex items-center gap-1.5 text-xs font-medium text-success">
             {badge}
-            {badgeTone === "success" && <span className="size-1.5 rounded-full bg-success" />}
+            <span className="size-1.5 rounded-full bg-success" />
           </p>
         )}
       </div>
@@ -519,7 +527,7 @@ function Telemetry({
     <div className="flex items-center gap-3 p-4">
       {icon}
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] text-muted-foreground">{label}</p>
+        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{label}</p>
         <p className="font-mono text-lg font-semibold tabular-nums leading-tight">{value}</p>
       </div>
       <span
