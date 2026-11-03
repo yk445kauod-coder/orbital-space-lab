@@ -96,14 +96,7 @@ function Sparkline({ points, className }: { points: number[]; className?: string
       </defs>
       <path d={`${path} L100,32 L0,32 Z`} fill="url(#sparkFill)" stroke="none" />
       <path d={path} fill="none" stroke="var(--ember)" strokeWidth="1.6" strokeLinejoin="round" />
-      <circle
-        cx="100"
-        cy={String(
-          32 - ((points[points.length - 1] - Math.min(...points)) / (Math.max(...points) - Math.min(...points) || 1)) * 28 - 2,
-        )}
-        r="1.8"
-        fill="var(--ember)"
-      />
+      <circle cx="100" cy={cy} r="1.8" fill="var(--ember)" />
     </svg>
   );
 }
