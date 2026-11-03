@@ -86,6 +86,14 @@ function Sparkline({ points, className }: { points: number[]; className?: string
       .join(" ");
   }, [points]);
 
+  const cy = useMemo(() => {
+    const max = Math.max(...points);
+    const min = Math.min(...points);
+    const last = points[points.length - 1] ?? min;
+    return String(32 - ((last - min) / (max - min || 1)) * 28 - 2);
+  }, [points]);
+
+
   return (
     <svg viewBox="0 0 100 32" className={className} preserveAspectRatio="none" aria-hidden>
       <defs>
