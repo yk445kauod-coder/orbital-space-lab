@@ -286,7 +286,10 @@ function Index() {
 
           <main className="flex-1 space-y-4 p-4 md:p-6">
             {/* status cards */}
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <section
+              className="fade-in-up grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+              style={{ animationDelay: "0ms" }}
+            >
               <StatusCard
                 icon={<Globe className="size-6 text-telemetry" />}
                 label="Environment"
@@ -412,7 +415,10 @@ function Index() {
             </section>
 
             {/* bottom row */}
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <section
+              className="fade-in-up grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+              style={{ animationDelay: "180ms" }}
+            >
               {/* quick access */}
               <div className="mission-panel p-5">
                 <PanelHeader icon={<Zap className="size-3.5 text-ember" />} title="Quick Access" />
