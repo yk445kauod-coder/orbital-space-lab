@@ -1,22 +1,25 @@
-# Orbital Space Lab
+# IGNIS — Microgravity Combustion Lab
 
-this ui ux in this fucking huge project are broken , garbage , colors garbage , fonts garabage , weghit garabage , free stocks and image garbage , the 3d models are heavy and garbage , we want to rebuild it as FRONTEND EXPERT , use all your skill and design skills and isnpiration design system
-use all your mcps conectors espcially a1
+A NASA Space Apps Challenge 2026 project. IGNIS is a mission-control dashboard for microgravity combustion research: live flame visualization, telemetry readouts, and an AI research assistant.
 
-fast and withotu burn all free tokens
-work to make it amazing nasa style space lab app , like xai elon must style , or better , and visualistaion , and space lemnst , and etc , liek i upload or better , use A1 to get inspiration , fast and low tokens burn
-this our project https://github.com/yk445kauod-coder/azura-anime , the nam edoesntr matter project
-work to make it amazing nasa style space lab app , like xai elon must style , or better , and visualistaion , and space lemnst , and etc , liek i upload or better , use A1 to get inspiration , fast and low tokens burn
+## Fork
 
-This project was built with [Lovable](https://lovable.dev).
+This repository is a **fork** of [azura-anime](https://github.com/yk445kauod-coder/azura-anime). The original project's name and scope were replaced entirely by this rebuild — the fork exists because IGNIS grew out of that codebase.
 
-## Build with Lovable
+## The rebuild
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/aff00746-5200-45a6-aa1a-aca0c0c6b30b).
+The forked UI was rebuilt from scratch as a space-lab mission-control experience (xAI/NASA mission-control aesthetic):
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+- **Design system** — dark-only theme built on OKLCH semantic tokens: deep-space navy surfaces, ember-orange combustion accents, cyan telemetry, defined entirely in `src/styles.css`.
+- **Typography** — Space Grotesk for display/values, DM Sans for body, IBM Plex Mono for mission-control labels and telemetry readouts.
+- **Real imagery** — no AI-generated images. Uses public-domain NASA photography hosted via CDN assets: the real "Fire in Space" microgravity flame (FLEX experiment) and the Blue Marble Earth backdrop, with NASA credit shown in the UI.
+- **Dashboard** — sidebar navigation (Operations / Science), system status bar with live UTC clock, environment/data-source/experiment status cards, combustion visualization panel with telemetry (flame diameter, temperature, pressure, heat-flux sparkline), IGNIS AI assistant panel, quick access, key insights, and mission stats with an SVG donut chart.
+- **Stack** — TanStack Start (React 19), Tailwind CSS v4, shadcn-style components, lucide-react icons.
+
+## Tech stack
+
+- [Lovable](https://lovable.dev) project — continue developing in the [Lovable editor](https://lovable.dev/projects/aff00746-5200-45a6-aa1a-aca0c0c6b30b).
+- Vite 7 + TanStack Start v1, Tailwind CSS v4.
 
 ## Development
 
@@ -27,4 +30,10 @@ git clone <this-repository-url>
 cd <repository-name>
 npm i
 npm run dev
+```
+
+## Building
+
+```sh
+npm run build
 ```
