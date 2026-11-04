@@ -206,10 +206,21 @@ function Index() {
     <div className="relative min-h-screen overflow-hidden bg-background font-sans text-foreground">
       {/* space backdrop — NASA Blue Marble */}
       <div className="pointer-events-none absolute inset-0" aria-hidden>
+        <div className="starfield absolute inset-0 opacity-70" />
         <img
           src={earthAsset.url}
           alt=""
-          className="absolute -bottom-32 right-[-12%] h-[75vh] w-auto -rotate-12 object-contain opacity-[0.18]"
+          className="absolute -bottom-32 right-[-12%] h-[75vh] w-auto -rotate-12 object-contain opacity-[0.28]"
+          style={{
+            maskImage: "radial-gradient(ellipse 70% 70% at 50% 50%, black 40%, transparent 72%)",
+            WebkitMaskImage: "radial-gradient(ellipse 70% 70% at 50% 50%, black 40%, transparent 72%)",
+          }}
+        />
+        <div
+          className="absolute -top-40 left-1/4 h-[60vh] w-[60vw] -translate-x-1/2 rounded-full opacity-25"
+          style={{
+            background: "radial-gradient(ellipse at center, color-mix(in oklab, var(--ember) 20%, transparent), transparent 65%)",
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/30" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/80" />
@@ -301,7 +312,7 @@ function Index() {
             </section>
 
             {/* visualization + assistant */}
-            <section className="grid gap-4 xl:grid-cols-[1fr_360px]">
+            <section className="fade-in-up grid gap-4 xl:grid-cols-[1fr_360px]" style={{ animationDelay: "90ms" }}>
               {/* combustion viz */}
               <div className="mission-panel flex flex-col overflow-hidden">
                 <div className="flex items-center gap-3 border-b border-border px-5 py-3.5">
@@ -315,7 +326,7 @@ function Index() {
                 </div>
 
                 <div className="grid flex-1 gap-4 p-4 md:grid-cols-[1fr_230px]">
-                  <div className="relative min-h-[280px] overflow-hidden rounded-lg border border-border bg-black md:min-h-[360px]">
+                  <div className="ember-ring relative min-h-[280px] overflow-hidden rounded-xl border border-primary/25 bg-black md:min-h-[360px]">
                     <img
                       src={flameAsset.url}
                       alt="Spherical flame burning in microgravity — NASA FLEX experiment"
